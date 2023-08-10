@@ -215,7 +215,7 @@ namespace USAddress
         /// The place pattern.
         /// </value>
         public string PlacePattern => @"
-                    (?:{0}\W*)?
+                    (?:{0}\W*)
                     (?:(?<{2}>{1}))?
                 ".FormatInvariant(CityAndStatePattern, ZipPattern, Components.Zip);
 
@@ -413,14 +413,8 @@ namespace USAddress
             { "COLORADO", "CO" },
             { "CONNECTICUT", "CT" },
             { "DELAWARE", "DE" },
-            {
-                "DISTRICT OF COLUMBIA",
-                "DC"
-            },
-            {
-                "FEDERATED STATES OF MICRONESIA",
-                "FM"
-            },
+            { "DISTRICT OF COLUMBIA", "DC" },
+            { "FEDERATED STATES OF MICRONESIA", "FM" },
             { "FLORIDA", "FL" },
             { "GEORGIA", "GA" },
             { "GUAM", "GU" },
@@ -433,9 +427,7 @@ namespace USAddress
             { "KENTUCKY", "KY" },
             { "LOUISIANA", "LA" },
             { "MAINE", "ME" },
-            {
-                "MARSHALL ISLANDS", "MH"
-            },
+            { "MARSHALL ISLANDS", "MH" },
             { "MARYLAND", "MD" },
             { "MASSACHUSETTS", "MA" },
             { "MICHIGAN", "MI" },
@@ -452,10 +444,7 @@ namespace USAddress
             { "N.Y.", "NY" },
             { "NORTH CAROLINA", "NC" },
             { "NORTH DAKOTA", "ND" },
-            {
-                "NORTHERN MARIANA ISLANDS",
-                "MP"
-            },
+            { "NORTHERN MARIANA ISLANDS", "MP" },
             { "OHIO", "OH" },
             { "OKLAHOMA", "OK" },
             { "OREGON", "OR" },
@@ -1169,7 +1158,7 @@ namespace USAddress
         private Regex InitializeRegex()
         {
             var numberPattern = @"(
-                    ((?<{0}>\d+)(?<{1}>(-[0-9])|(\-?[A-Z]))(?=\b))    # Unit-attached
+                    ((?<{0}>\d+)(?<{1}>(-[0-9])|(\-?[A-Z]))(?=\b))                # Unit-attached
                     |(?<{0}>\d+[\-\ ]?\d+\/\d+)                                   # Fractional
                     |(?<{0}>\d+-?\d*)                                             # Normal Number
                     |(?<{0}>[NSWE]\ ?\d+\ ?[NSWE]\ ?\d+)                          # Wisconsin/Illinois
@@ -1177,7 +1166,7 @@ namespace USAddress
 
             var armedForcesPattern = @"# Special case for APO/FPO/DPO addresses
                     (
-                        (?<{1}>.+?)
+                        (?<{1}>(PSC|CMR|UMR|RPO|APO|OMDC|USS)\W+.+?)
                         (?<{2}>[AFD]PO)\W+
                         (?<{3}>A[AEP])\W+
                         (?<{4}>{0})
