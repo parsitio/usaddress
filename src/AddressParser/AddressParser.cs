@@ -511,7 +511,7 @@ namespace USAddress
                             (?:[^\w,]+(?<{5}>{0})\b)?
                           )
                         )
-                    ".FormatInvariant(DirectionalPattern, SuffixPattern, Components.Street, Components.Suffix, Components.Predirectional, Components.Postdirectional);
+                    ".Replace("\\W","[\\s.]").FormatInvariant(DirectionalPattern, SuffixPattern, Components.Street, Components.Suffix, Components.Predirectional, Components.Postdirectional);
 
         /// <summary>
         /// Gets a map from the lowercase USPS standard street suffixes to their canonical postal
