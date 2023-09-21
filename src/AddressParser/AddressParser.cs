@@ -215,7 +215,7 @@ namespace USAddress
         /// The place pattern.
         /// </value>
         public string PlacePattern => @"
-                    (?:{0}\W*)?
+                    (?:{0}\W*)
                     (?:(?<{2}>{1}))?
                 ".FormatInvariant(CityAndStatePattern, ZipPattern, Components.Zip);
 
@@ -227,10 +227,8 @@ namespace USAddress
         /// </value>
         public string PostalBoxPattern => @"# Special case for PO boxes
                     (
-                        \W*
                         {0}\W+
                         {1}
-                        \W*
                     )".FormatInvariant(PostalBoxPatternAddressLineOnly, PlacePattern);
 
         /// <summary>
@@ -415,14 +413,8 @@ namespace USAddress
             { "COLORADO", "CO" },
             { "CONNECTICUT", "CT" },
             { "DELAWARE", "DE" },
-            {
-                "DISTRICT OF COLUMBIA",
-                "DC"
-            },
-            {
-                "FEDERATED STATES OF MICRONESIA",
-                "FM"
-            },
+            { "DISTRICT OF COLUMBIA", "DC" },
+            { "FEDERATED STATES OF MICRONESIA", "FM" },
             { "FLORIDA", "FL" },
             { "GEORGIA", "GA" },
             { "GUAM", "GU" },
@@ -435,9 +427,7 @@ namespace USAddress
             { "KENTUCKY", "KY" },
             { "LOUISIANA", "LA" },
             { "MAINE", "ME" },
-            {
-                "MARSHALL ISLANDS", "MH"
-            },
+            { "MARSHALL ISLANDS", "MH" },
             { "MARYLAND", "MD" },
             { "MASSACHUSETTS", "MA" },
             { "MICHIGAN", "MI" },
@@ -454,10 +444,7 @@ namespace USAddress
             { "N.Y.", "NY" },
             { "NORTH CAROLINA", "NC" },
             { "NORTH DAKOTA", "ND" },
-            {
-                "NORTHERN MARIANA ISLANDS",
-                "MP"
-            },
+            { "NORTHERN MARIANA ISLANDS", "MP" },
             { "OHIO", "OH" },
             { "OKLAHOMA", "OK" },
             { "OREGON", "OR" },
@@ -476,8 +463,32 @@ namespace USAddress
             { "WASHINGTON", "WA" },
             { "WEST VIRGINIA", "WV" },
             { "WISCONSIN", "WI" },
-            { "WYOMING", "WY" }
+            { "WYOMING", "WY" },
+
+            { "BRITISH COLUMBIA", "BC" },
+            { "B.C.", "BC" },
+            { "ALBERTA", "AB" },
+            { "SASKATCHEWAN", "SK" },
+            { "MANITOBA", "MB" },
+            { "ONTARIO", "ON" },
+            { "QUEBEC", "QC" },
+            { "NEWFOUNDLAND AND LABRADOR", "NL" },
+            { "NEWFOUNDLAND", "NL" },
+            { "LABRADOR", "NL" },
+            { "NEW BRUNSWICK", "NB" },
+            { "N.B.", "NB" },
+            { "NOVA SCOTIA", "NS" },
+            { "N.S.", "NS" },
+            { "PRINCE EDWARD ISLAND", "PE" },
+            { "PEI", "PE" },
+            { "P.E.I.", "PE" },
+            { "NUNAVUT", "NU" },
+            { "NORTHWEST TERRITORIES", "NT" },
+            { "N.W.T.", "NT" },
+            { "YUKON", "YT" },
         };
+
+        public string StreetName => @"\d{1,3}(?:st|nd|rd|th)?|(\w+[-\s]){0,5}\w+";
 
         /// <summary>
         /// Gets the pattern to match the street number, name, and suffix.
@@ -499,19 +510,15 @@ namespace USAddress
                           |
                           (?:(?<{4}>{0})\W+)?
                           (?:
-                            (?<{2}>[^,]*\d)
+                            (?<{2}>{6})
                             (?:[^\w,]*(?<{5}>{0})\b)
                            |
-                            (?<{2}>[^,]+)
+                            (?<{2}>{6})
                             (?:[^\w,]+(?<{3}>{1})\b)
-                            (?:[^\w,]+(?<{5}>{0})\b)?
-                           |
-                            (?<{2}>[^,]+?)
-                            (?:[^\w,]+(?<{3}>{1})\b)?
-                            (?:[^\w,]+(?<{5}>{0})\b)?
+                            (?:[^\w,]+(?<{5}>{0})\b)?                           
                           )
                         )
-                    ".Replace("\\W","[\\s.]").FormatInvariant(DirectionalPattern, SuffixPattern, Components.Street, Components.Suffix, Components.Predirectional, Components.Postdirectional);
+                    ".FormatInvariant(DirectionalPattern, SuffixPattern, Components.Street, Components.Suffix, Components.Predirectional, Components.Postdirectional, StreetName);
 
         /// <summary>
         /// Gets a map from the lowercase USPS standard street suffixes to their canonical postal
@@ -1151,7 +1158,7 @@ namespace USAddress
         private Regex InitializeRegex()
         {
             var numberPattern = @"(
-                    ((?<{0}>\d+)(?<{1}>(-[0-9])|(\-?[A-Z]))(?=\b))    # Unit-attached
+                    ((?<{0}>\d+)(?<{1}>(-[0-9])|(\-?[A-Z]))(?=\b))                # Unit-attached
                     |(?<{0}>\d+[\-\ ]?\d+\/\d+)                                   # Fractional
                     |(?<{0}>\d+-?\d*)                                             # Normal Number
                     |(?<{0}>[NSWE]\ ?\d+\ ?[NSWE]\ ?\d+)                          # Wisconsin/Illinois
@@ -1159,31 +1166,27 @@ namespace USAddress
 
             var armedForcesPattern = @"# Special case for APO/FPO/DPO addresses
                     (
-                        [^\w\#]*
-                        (?<{1}>.+?)
+                        (?<{1}>(PSC|CMR|UMR|RPO|APO|OMDC|USS)\W+.+?)
                         (?<{2}>[AFD]PO)\W+
                         (?<{3}>A[AEP])\W+
                         (?<{4}>{0})
-                        \W*
                     )".FormatInvariant(ZipPattern, Components.StreetLine, Components.City, Components.State, Components.Zip);
 
             var generalPattern = @"(
-                        [^\w\#]*    # skip non-word chars except # (e.g. unit)
                         (  {0} )\W*
                            {1}\W+
                         (?:{2}\W+)?
                            {3}
-                        \W*         # require on non-word chars at end
                     )".FormatInvariant(numberPattern, StreetPattern, AllSecondaryUnitPattern, PlacePattern);
 
             var addressPattern = @"
-                    ^
-                    {0}
+                    (?<=^|[^\w\#]*)
+                    ({0}
                     |
                     {1}
                     |
-                    {2}
-                    $           # right up to end of string
+                    {2})
+                    (?=$|/W|/b)
                 ".FormatInvariant(armedForcesPattern, PostalBoxPattern, generalPattern);
 
             return new Regex(addressPattern, MatchOptions);
